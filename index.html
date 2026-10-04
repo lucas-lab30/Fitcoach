@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>FitCoach</title>
 <meta name="description" content="Coach fitness : calories, macros, entraînements et progression.">
-<meta name="theme-color" content="#0d1117">
+<meta name="theme-color" content="#f3f6fb">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -45,6 +45,13 @@ svg text{fill:var(--mu);font-size:10px}
 #scn .tp{position:absolute;left:12px;top:calc(12px + env(safe-area-inset-top,0px))}
 #scn .bt{position:absolute;left:0;right:0;bottom:0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));background:#000c;color:#fff;text-align:center}
 .bdg{display:inline-block;background:var(--card2);border:1px solid var(--bd);border-radius:10px;padding:2px 8px;margin:4px 4px 0 0;font-size:13px}
+:root:root:root{--bg:#f3f6fb;--card:#fff;--card2:#edf1f8;--tx:#152033;--mu:#6a778c;--ac:#3ddc84;--acx:#08301a;--bd:#e3e9f3;--red:#ff5c70;--blu:#2f7bff;--ora:#ff9a2e;--vio:#7b5cff}
+body{background:#f3f6fb linear-gradient(180deg,#e3f8ec,#f3f6fb 300px) no-repeat}
+.c{border-color:transparent;border-radius:22px;box-shadow:0 6px 20px #1b2b4a14;animation:pop .35s both}@keyframes pop{from{opacity:0;transform:translateY(8px)}}
+.b{background:linear-gradient(135deg,#b9f53d,#3ddc84);box-shadow:0 6px 16px #3ddc8444;border-radius:16px;padding:14px 16px}
+.b2{background:#fff}nav{background:#ffffffee;backdrop-filter:blur(10px)}nav .on{color:#12a45c}
+.hero{background:linear-gradient(135deg,#19c37d,#2f7bff 70%,#7b5cff);color:#fff;border:0}.hero .mu{color:#ffffffcc}.hero .big small{font-size:15px;opacity:.85;font-weight:500}.hero .bar{background:#fff4}.hero .bar i{background:#fff!important}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 </style></head><body>
 <main id="app"></main><div id="tm"></div><div id="sh"></div>
 <nav id="nav"></nav>
@@ -79,17 +86,18 @@ const mb=(n,v,m,col)=>`<div style="margin:8px 0"><div class="row sp mu"><span>${
 function toast(t){const e=document.createElement("div");e.textContent=t;e.style.cssText="position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:var(--ac);color:var(--acx);padding:8px 16px;border-radius:20px;font-weight:700;z-index:20";document.body.append(e);setTimeout(()=>e.remove(),1600)}
 const sheet=h=>{$("#sh").innerHTML='<div class="bk" onclick="cl()"></div><div class="pn">'+h+"</div>"},cl=()=>{$("#sh").innerHTML=""};
 function go(v){view=v;render();scrollTo(0,0)}
-function render(){S.recent=S.recent||[];S.fav=S.fav||[];const T=calc(S.profile),t=tot(TODAY),burn=S.logs.filter(l=>l.d==TODAY).reduce((a,l)=>a+l.dur*6,0);let h="";
-if(view=="dash"){const nx=S.progs.length?S.progs[S.logs.length%S.progs.length]:null,rem=T.k+burn-t.k,w=lastW(),w0=S.weights[0]?S.weights[0].v:S.profile.w,w7=S.weights.slice(-45);
-const l7=S.logs.filter(l=>l.d>=dstr(30)).length,avg=r0([1,2,3,4,5,6,7].reduce((a,i)=>a+tot(dstr(i)).k,0)/7);
-h=`<h1>Tableau de bord</h1><div class="c"><div class="row sp"><h2>Calories</h2><span class="mu">${new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})}</span></div><div class="row" style="justify-content:space-around"><div style="position:relative;width:170px"><div>${ring(t.k,T.k+burn)}</div><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><div class="big">${r0(t.k)}</div><div class="mu">/ ${T.k+burn} kcal</div></div></div><div><div class="mu">Reste</div><div style="font-size:26px;font-weight:700;color:${rem<0?"var(--red)":"var(--ac)"}">${r0(rem)}</div><div class="mu">Brûlées</div><div style="font-size:22px;font-weight:700">${burn}</div></div></div>${mb("Protéines",t.p,T.p,"var(--blu)")}${mb("Glucides",t.c,T.c,"var(--ora)")}${mb("Lipides",t.f,T.f,"var(--red)")}</div>
-<div class="c"><div class="row sp"><h2>Poids</h2><span class="mu">objectif ${S.goals.w} kg</span></div><div class="row" style="gap:18px"><div><div class="big">${w} kg</div><div class="mu">départ ${w0} · ${w-w0>0?"+":""}${r1(w-w0)} kg</div></div><div style="flex:1">${line(w7.map(x=>x.v),w7.map(x=>x.d.slice(5)))}</div></div></div>
-<div class="c"><h2>Entraînement du jour</h2>${nx?`<div class="row sp"><div><div style="font-size:22px;font-weight:700">${esc(nx.name)}</div><div class="mu">${nx.ex.length} exercices · ~${nx.ex.reduce((a,e)=>a+e.sets,0)*3+10} min</div></div><button class="b sm" onclick="startS(${S.progs.indexOf(nx)})">Commencer l'entraînement</button></div>`:'<button class="b" onclick="go(\'train\')">Créer un programme</button>'}</div>
-<div class="c"><h2>Progression</h2><div class="g2"><div><div class="mu">Tour de taille</div><b>${S.meas.length?S.meas[S.meas.length-1].waist:"–"} cm</b></div><div><div class="mu">Séances (30 j)</div><b>${l7}</b></div><div><div class="mu">Calories moyennes</div><b>${avg} kcal</b></div><div><div class="mu">Record récent</div><b>${prTxt()}</b></div></div></div>`}
-else if(view=="nut"){h=`<h1>Nutrition</h1><button class="b" style="margin-bottom:12px" onclick="scan('')">📷 Scanner un produit</button><div class="c row sp"><div><div class="big">${r0(t.k)} kcal</div><div class="mu">sur ${T.k} · P ${r0(t.p)} · G ${r0(t.c)} · L ${r0(t.f)}</div></div></div>`;
+function render(){S.recent=S.recent||[];S.fav=S.fav||[];S.routines=S.routines||[];S.cfg=S.cfg||{};const T=calc(S.profile),t=tot(TODAY),burn=S.logs.filter(l=>l.d==TODAY).reduce((a,l)=>a+l.dur*6,0);let h="";
+if(view=="dash"){const nx=S.progs.length?S.progs[S.logs.length%S.progs.length]:null,rem=T.k+burn-t.k,w=lastW(),w0=S.weights[0]?S.weights[0].v:S.profile.w,w7=S.weights.slice(-45),l7=S.logs.filter(l=>l.d>=dstr(30)).length,avg=r0([1,2,3,4,5,6,7].reduce((a,i)=>a+tot(dstr(i)).k,0)/7),mk=id=>r0((S.meals[TODAY]||[]).filter(i=>i.m==id).reduce((a,i)=>{const x=fd(i.f);return a+(x?x[2]*i.g/100:0)},0));
+const mc=(e,n,v,m,col)=>`<div class="c" style="padding:12px;margin:0"><div style="font-size:24px">${e}</div><div class="mu">${n}</div><b>${r0(v)}</b><span class="mu"> / ${m} g</span><div class="bar" style="margin-top:6px"><i style="width:${pct(v,m)}%;background:${col}"></i></div></div>`;
+h=`<h1 style="margin-bottom:0">Bonjour 👋</h1><div class="mu" style="margin-bottom:12px">Voici ton résumé du jour</div><div class="c hero"><div class="row sp"><div style="flex:1;padding-right:10px"><div class="mu">CALORIES</div><div class="big">${r0(t.k)}<small> / ${T.k+burn} kcal</small></div><div class="bar" style="margin:8px 0"><i style="width:${pct(t.k,T.k+burn)}%"></i></div><b>${r0(Math.abs(rem))} kcal ${rem<0?"en trop":"restantes"}</b><div class="mu">🔥 ${burn} kcal brûlées</div></div>${ring2(t.k,T.k+burn)}</div></div>
+<div class="g3" style="margin-bottom:12px">${mc("🥩","Protéines",t.p,T.p,"var(--blu)")}${mc("🍚","Glucides",t.c,T.c,"var(--ora)")}${mc("🥑","Lipides",t.f,T.f,"var(--vio)")}</div>
+<div class="c"><h2>🍽️ Alimentation aujourd'hui</h2>${MEALS.map(([id,nm])=>`<div class="it" onclick="go('nut')"><span>${MI[id]} ${nm}</span><b>${mk(id)} kcal</b></div>`).join("")}<button class="b" style="margin-top:10px" onclick="go('nut')">+ Ajouter un aliment</button></div>
+<div class="c"><h2>🏋️ Entraînement du jour</h2>${nx?`<div class="row sp"><div><div style="font-size:22px;font-weight:700">${esc(nx.name)}</div><div class="mu">${nx.ex.length} exercices · ~${nx.ex.reduce((a,e)=>a+e.sets,0)*3+10} min</div></div><button class="b sm" onclick="startS(${S.progs.indexOf(nx)})">Commencer</button></div>`:'<button class="b" onclick="go(\'train\')">Créer un programme</button>'}</div>
+<div class="c"><h2>📈 Progression</h2><div class="g2"><div><div class="mu">Tour de taille</div><b>${S.meas.length?S.meas[S.meas.length-1].waist:"–"} cm</b></div><div><div class="mu">Séances (30 j)</div><b>${l7}</b></div><div><div class="mu">Calories moyennes</div><b>${avg} kcal</b></div><div><div class="mu">Record récent</div><b>${prTxt()}</b></div></div></div>
+<div class="c"><div class="row sp"><h2>⚖️ Poids</h2><span class="mu">objectif ${S.goals.w} kg</span></div><div class="row" style="gap:18px"><div><div class="big">${w} kg</div><div class="mu">départ ${w0} · ${w-w0>0?"+":""}${r1(w-w0)} kg</div></div><div style="flex:1">${line(w7.map(x=>x.v),w7.map(x=>x.d.slice(5)))}</div></div></div>`}
+else if(view=="nut"){h=`<h1>Nutrition</h1><div class="c hero"><div class="mu">Aujourd'hui</div><div class="big">${r0(t.k)}<small> / ${T.k} kcal</small></div><div>P ${r0(t.p)} g · G ${r0(t.c)} g · L ${r0(t.f)} g · Fib ${r0(t.fib)} g</div></div><button class="b" style="margin-bottom:12px" onclick="scan('')">📷 Scanner un produit</button>`;
 MEALS.forEach(([id,nm])=>{const its=(S.meals[TODAY]||[]).map((i,ix)=>({...i,ix})).filter(i=>i.m==id);let s={k:0,p:0,c:0,f:0};its.forEach(i=>{const x=fd(i.f);if(x){s.k+=x[2]*i.g/100;s.p+=x[3]*i.g/100;s.c+=x[4]*i.g/100;s.f+=x[5]*i.g/100}});
-h+=`<div class="c"><div class="row sp"><h2>${nm}</h2><b>${r0(s.k)} kcal</b></div><div class="mu">P ${r0(s.p)} g · G ${r0(s.c)} g · L ${r0(s.f)} g</div>${its.map(i=>{const x=fd(i.f)||[0,0,0,0,0,0],q=i.g/100;return`<div class="it"><div>${esc(i.f)}<div class="mu">${i.g} g · ${r0(x[2]*q)} kcal · P ${r1(x[3]*q)}</div></div><button class="b2" onclick="delI(${i.ix})">✕</button></div>`}).join("")}<button class="b2" style="width:100%;margin-top:8px" onclick="addF('${id}')">+ Ajouter un aliment</button></div>`});
-h+=`<div class="c"><h2>Fibres</h2>${mb("Fibres",t.fib,T.fib,"var(--ac)")}</div>`}
+h+=`<div class="c"><div class="row sp"><h2>${MI[id]} ${nm}</h2><b>${r0(s.k)} kcal</b></div>${its.map(i=>{const x=fd(i.f)||[0,0,0,0,0,0];return`<div class="it" onclick="editI(${i.ix})"><div class="row" style="gap:10px"><span style="font-size:24px">${em(x)}</span><div>${esc(i.f)}<div class="mu">${qtxt(i,x)} · ${r0(x[2]*i.g/100)} kcal</div></div></div><button class="b2" onclick="event.stopPropagation();delI(${i.ix})">✕</button></div>`}).join("")}${its.length?`<div class="mu" style="margin-top:6px">Total · P ${r0(s.p)} g · G ${r0(s.c)} g · L ${r0(s.f)} g</div>`:""}<div class="row" style="margin-top:10px"><button class="b" style="flex:1" onclick="addF('${id}')">+ Ajouter</button>${its.length?`<button class="b2" onclick="rtSave('${id}')">⭐ Enregistrer</button>`:""}</div></div>`})}
 else if(view=="train"){h=`<h1>Entraînement</h1>`+S.progs.map((p,i)=>`<div class="c"><div class="row sp"><h2>${esc(p.name)}</h2><div class="row"><button class="b2" onclick="delP(${i})">Supprimer</button><button class="b sm" onclick="startS(${i})">Démarrer</button></div></div>${p.ex.map(e=>`<div class="it"><span>${esc(e.n)}</span><span class="mu">${e.sets}×${e.reps} · ${e.w} kg · repos ${e.rest}s</span></div>`).join("")}</div>`).join("")+`<button class="b" onclick="newP()">+ Créer un programme</button>`}
 else if(view=="sess"&&sess){h=`<div class="row sp"><h1>${esc(S.progs[sess.p].name)}</h1><span class="mu" id="el"></span></div>`+sess.ex.map((e,i)=>{const pr=bestW(e.n);return`<div class="c"><div class="row sp"><h2>${esc(e.n)}</h2><span class="mu">Record ${pr?pr+" kg":"–"}</span></div>${e.sets.map((s,j)=>`<div class="set"><span class="mu">S${j+1}</span><input type="number" inputmode="decimal" value="${s.w}" onchange="sess.ex[${i}].sets[${j}].w=+this.value"><input type="number" inputmode="numeric" value="${s.r}" onchange="sess.ex[${i}].sets[${j}].r=+this.value"><button class="ck ${s.d?"d":""}" onclick="chk(${i},${j})">✓</button></div>`).join("")}<div class="row sp"><button class="b2" onclick="addS(${i})">+ Ajouter une série</button><span class="mu">Volume ${r0(e.sets.filter(s=>s.d).reduce((a,s)=>a+s.w*s.r,0))} kg</span></div></div>`}).join("")+`<button class="b" onclick="finS()">Terminer la séance</button><button class="b2" style="width:100%;margin-top:8px" onclick="sess=null;go('train')">Abandonner</button>`}
 else if(view=="prog"){const ws=S.weights.filter(x=>x.d>=dstr(rng)),exs=[...new Set(S.logs.flatMap(l=>l.ex.map(e=>e.n)))];if(!exSel||!exs.includes(exSel))exSel=exs.includes("Développé couché")?"Développé couché":exs[0]||"";
@@ -104,8 +112,8 @@ h=`<h1>Progression</h1><div class="c"><h2>Poids</h2><div class="chips">${[[7,"7 
 <div class="c"><div class="row sp"><h2>Mensurations</h2><button class="b2" onclick="addM()">+ Ajouter</button></div>${S.meas.slice(-3).reverse().map(m=>`<div class="it"><span>${m.d}</span><span class="mu">taille ${m.waist} · poitrine ${m.chest} · bras ${m.arm} · cuisse ${m.thigh}</span></div>`).join("")}</div>
 <div class="c"><h2>Historique</h2>${S.logs.slice(-8).reverse().map(l=>`<div class="it"><span>${l.d.slice(5)} · ${esc(l.p)}</span><span class="mu">${l.dur} min · ${r0(vol(l))} kg</span></div>`).join("")}${[1,2,3].map(i=>{const d=dstr(i),x=tot(d);return`<div class="it"><span>${d.slice(5)} · repas</span><span class="mu">${r0(x.k)} kcal · P ${r0(x.p)} g</span></div>`}).join("")}</div>`}
 else if(view=="prof"){const p=S.profile;h=`<h1>Profil</h1><div class="c"><div class="g2"><label class="mu">Sexe<select id="p_sex"><option value="m" ${p.sex=="m"?"selected":""}>Homme</option><option value="f" ${p.sex=="f"?"selected":""}>Femme</option></select></label><label class="mu">Âge<input id="p_age" type="number" value="${p.age}"></label><label class="mu">Taille (cm)<input id="p_h" type="number" value="${p.h}"></label><label class="mu">Poids (kg)<input id="p_w" type="number" step=".1" value="${p.w}"></label></div><label class="mu">Niveau d'activité<select id="p_act">${ACT.map((a,i)=>`<option value="${i}" ${p.act==i?"selected":""}>${a}</option>`).join("")}</select></label><label class="mu">Objectif<select id="p_goal">${GL.map((a,i)=>`<option value="${i}" ${p.goal==i?"selected":""}>${a}</option>`).join("")}</select></label><button class="b" style="margin-top:10px" onclick="saveP()">Enregistrer et recalculer</button></div>
-<div class="c"><h2>Tes besoins estimés</h2><div class="g2"><div><div class="mu">Métabolisme basal</div><b>${T.bmr} kcal</b></div><div><div class="mu">Dépense journalière</div><b>${T.tdee} kcal</b></div><div><div class="mu">Objectif</div><b>${T.k} kcal</b></div><div><div class="mu">${T.adj<0?"Déficit":T.adj>0?"Surplus":"Équilibre"}</div><b>${T.adj} kcal</b></div></div><p class="mu">Protéines ${T.p} g · Glucides ${T.c} g · Lipides ${T.f} g · Fibres ${T.fib} g</p><p class="mu">Ce sont des estimations (formule de Mississippi-St Jeor), pas des valeurs médicales exactes. Ajuste selon ton évolution réelle.</p></div><button class="b2" style="width:100%" onclick="if(confirm('Réinitialiser avec les données de démonstration ?')){S=demo();save();go('dash')}">Réinitialiser les données de démo</button>`}
-$("#app").innerHTML=h;$("#nav").innerHTML=[["dash","▣","Accueil"],["nut","◐","Nutrition"],["train","▲","Séances"],["prog","◢","Progrès"],["prof","●","Profil"]].map(([k,i,l])=>`<button class="${view==k||(view=="sess"&&k=="train")?"on":""}" onclick="go('${k}')"><b>${i}</b>${l}</button>`).join("")}
+<div class="c"><h2>Tes besoins estimés</h2><div class="g2"><div><div class="mu">Métabolisme basal</div><b>${T.bmr} kcal</b></div><div><div class="mu">Dépense journalière</div><b>${T.tdee} kcal</b></div><div><div class="mu">Objectif</div><b>${T.k} kcal</b></div><div><div class="mu">${T.adj<0?"Déficit":T.adj>0?"Surplus":"Équilibre"}</div><b>${T.adj} kcal</b></div></div><p class="mu">Protéines ${T.p} g · Glucides ${T.c} g · Lipides ${T.f} g · Fibres ${T.fib} g</p><p class="mu">Ce sont des estimations (formule de Mississippi-St Jeor), pas des valeurs médicales exactes. Ajuste selon ton évolution réelle.</p></div><div class="c"><h2>📷 Analyse photo (IA)</h2><p class="mu">Optionnel : adresse de ton serveur d'analyse (voir worker.js). Aucune clé secrète n'est stockée dans l'app.</p><input id="cf_u" placeholder="https://….workers.dev" value="${esc((S.cfg||{}).url||"")}"><input id="cf_t" style="margin-top:6px" placeholder="Code d'accès (optionnel)" value="${esc((S.cfg||{}).token||"")}"><button class="b2" style="margin-top:8px" onclick="saveCfg()">Enregistrer</button></div><button class="b2" style="width:100%" onclick="if(confirm('Réinitialiser avec les données de démonstration ?')){S=demo();save();go('dash')}">Réinitialiser les données de démo</button>`}
+$("#app").innerHTML=h;$("#nav").innerHTML=[["dash","🏠","Accueil"],["nut","🥗","Nutrition"],["train","🏋️","Séances"],["prog","📈","Progrès"],["prof","👤","Profil"]].map(([k,i,l])=>`<button class="${view==k||(view=="sess"&&k=="train")?"on":""}" onclick="go('${k}')"><b>${i}</b>${l}</button>`).join("")}
 function bestW(n){let m=0;S.logs.forEach(l=>l.ex.forEach(e=>{if(e.n==n)e.sets.forEach(s=>{if(s.w>m)m=s.w})}));return m}
 function prTxt(){const l=S.logs[S.logs.length-1];if(!l)return"–";let b=null;l.ex.forEach(e=>e.sets.forEach(s=>{if(!b||s.w>b.w)b={n:e.n,w:s.w}}));return b?esc(b.n.split(" ")[0])+" "+b.w+" kg":"–"}
 // Nutrition
@@ -138,6 +146,143 @@ function editG(){const G=S.goals;sheet(`<h2>Objectifs</h2><label class="mu">Poid
 function saveG(){S.goals={w:+$("#g1").value,bench:+$("#g2").value,freq:+$("#g3").value};save();cl();render()}
 function saveP(){const g=i=>+$("#p_"+i).value,p={sex:$("#p_sex").value,age:g("age"),h:g("h"),w:g("w"),act:g("act"),goal:g("goal")};if(!(p.age>12&&p.age<100&&p.h>100&&p.h<250&&p.w>25&&p.w<300)){toast("Valeurs incorrectes");return}S.profile=p;save();render();toast("Profil mis à jour")}
 setInterval(()=>{const e=$("#el");if(e&&sess)e.textContent=r0((Date.now()-sess.t0)/60000)+" min"},5000);
+const nz=s=>String(s).toLowerCase().replace(/œ/g,"oe").replace(/æ/g,"ae").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+const MI={bk:"☀️",lu:"🍝",di:"🌙",sn:"🍎"},CATE={Fruits:"🍎",Légumes:"🥕",Viandes:"🥩",Poissons:"🐟",Féculents:"🍚",Laitages:"🥛",Oeufs:"🥚",Oléagineux:"🥜",Plats:"🍽️",Boissons:"🥤","Produits scannés":"📦","Mes aliments":"⭐"},COMMON=["Kiwi","Banane","Pomme","Oeuf entier","Blanc de poulet cuit","Riz blanc cuit","Pâtes cuites","Skyr nature","Pain complet","Flocons d'avoine","Brocoli","Café"];
+const DB=`🥝|Kiwi|kiwie,kiwis,kiwi vert|Fruits|61|1.1|14.7|0.5|3|unité=75
+🍌|Banane|bananes|Fruits|89|1.1|22.8|0.3|2.6|unité=120
+🍎|Pomme|pommes|Fruits|52|0.3|13.8|0.2|2.4|unité=180
+🍐|Poire|poires|Fruits|57|0.4|15.2|0.1|3.1|unité=170
+🍊|Orange|oranges|Fruits|47|0.9|11.8|0.1|2.4|unité=150
+🍊|Clémentine|clementines,mandarine|Fruits|47|0.9|12|0.2|1.7|unité=70
+🍓|Fraise|fraises|Fruits|32|0.7|7.7|0.3|2|portion=150
+🍓|Framboise|framboises|Fruits|52|1.2|11.9|0.7|6.5|portion=100
+🫐|Myrtille|myrtilles,bleuets|Fruits|57|0.7|14.5|0.3|2.4|portion=100
+🍇|Raisin|raisins|Fruits|69|0.7|18.1|0.2|0.9|portion=150
+🥭|Mangue|mangues|Fruits|60|0.8|15|0.4|1.6|unité=300
+🍍|Ananas|ananas frais|Fruits|50|0.5|13.1|0.1|1.4|tranche=80
+🍈|Melon|melons|Fruits|34|0.8|8.2|0.2|0.9|tranche=200
+🍉|Pastèque|pasteque,melon d'eau|Fruits|30|0.6|7.6|0.2|0.4|tranche=250
+🍑|Pêche|peche,peches|Fruits|39|0.9|9.5|0.3|1.5|unité=150
+🍑|Nectarine|nectarines|Fruits|44|1.1|10.6|0.3|1.7|unité=140
+🍑|Abricot|abricots|Fruits|48|1.4|11.1|0.4|2|unité=45
+🍑|Prune|prunes|Fruits|46|0.7|11.4|0.3|1.4|unité=40
+🍋|Citron|citrons|Fruits|29|1.1|9.3|0.3|2.8|unité=100
+🥑|Avocat|avocats|Fruits|160|2|8.5|14.7|6.7|unité=150
+🍒|Cerise|cerises|Fruits|63|1.1|16|0.2|2.1|portion=100
+🍊|Pamplemousse|pamplemousses|Fruits|42|0.8|10.7|0.1|1.6|unité=250
+🥕|Carotte|carottes|Légumes|41|0.9|9.6|0.2|2.8|unité=80
+🍅|Tomate|tomates|Légumes|18|0.9|3.9|0.2|1.2|unité=120
+🥒|Concombre|concombres|Légumes|15|0.7|3.6|0.1|0.5|unité=300
+🥒|Courgette|courgettes|Légumes|17|1.2|3.1|0.3|1|unité=200
+🥦|Brocoli|brocolis|Légumes|34|2.8|6.6|0.4|2.6|portion=150
+🫛|Haricot vert|haricots verts|Légumes|31|1.8|7|0.2|3.4|portion=150
+🥬|Salade|laitue,salade verte|Légumes|15|1.4|2.9|0.2|1.3|portion=80
+🥬|Épinards|epinard|Légumes|23|2.9|3.6|0.4|2.2|portion=150
+🫑|Poivron|poivrons|Légumes|26|1|6|0.3|2|unité=150
+🍆|Aubergine|aubergines|Légumes|25|1|5.9|0.2|3|unité=250
+🍄|Champignon|champignons,champignon de paris|Légumes|22|3.1|3.3|0.3|1|portion=100
+🧅|Oignon|oignons|Légumes|40|1.1|9.3|0.1|1.7|unité=110
+🥔|Pomme de terre|patate,pommes de terre|Féculents|86|2|20|0.1|2.2|unité=150
+🍠|Patate douce|patates douces|Féculents|86|1.6|20|0.1|3|unité=200
+🥬|Chou-fleur|chou fleur|Légumes|25|2|5|0.3|2|portion=150
+🌽|Maïs|mais|Légumes|96|3.4|21|1.5|2.4|portion=100
+🫛|Petits pois|petit pois|Légumes|81|5.4|14|0.4|5.1|portion=100
+🧄|Ail|gousse d'ail|Légumes|149|6.4|33|0.5|2.1|gousse=4
+🍗|Blanc de poulet cuit|poulet,filet de poulet,escalope de poulet|Viandes|165|31|0|3.6|0|portion=125
+🍗|Blanc de poulet cru|poulet cru|Viandes|110|23|0|1.5|0|portion=125
+🍗|Poulet rôti avec peau|poulet roti|Viandes|215|27|0|12|0|portion=150
+🍗|Cuisse de poulet cuite|poulet cuisse|Viandes|209|26|0|11|0|unité=120
+🥩|Steak haché 15% cuit|steak,boeuf hache|Viandes|215|26|0|12|0|unité=100
+🥩|Boeuf rumsteck cuit|boeuf,bœuf|Viandes|180|28|0|7|0|portion=130
+🥩|Filet de porc cuit|porc|Viandes|143|27|0|3.5|0|portion=130
+🦃|Dinde blanc cuit|dinde|Viandes|135|30|0|1.5|0|portion=125
+🥩|Veau escalope cuite|veau|Viandes|150|31|0|3|0|portion=125
+🥓|Jambon blanc|jambon|Viandes|107|18|0.5|3.5|0|tranche=40
+🌭|Saucisse|saucisses,merguez|Viandes|300|13|1|27|0|unité=80
+🐟|Saumon|saumon cuit,saumon frais|Poissons|208|20|0|13|0|portion=130
+🐟|Thon frais cuit|thon|Poissons|144|23|0|5|0|portion=130
+🐟|Cabillaud|cabillaud cuit,morue,poisson blanc|Poissons|105|23|0|0.9|0|portion=130
+🐟|Sardine|sardines|Poissons|208|25|0|11.5|0|unité=40
+🦐|Crevette|crevettes|Poissons|99|24|0.2|0.3|0|portion=100
+🐟|Truite|truite cuite|Poissons|150|21|0|7|0|portion=130
+🍚|Riz blanc cuit|riz|Féculents|130|2.7|28|0.3|0.4|portion=150
+🍚|Riz basmati cuit|basmati|Féculents|125|3|27|0.4|0.5|portion=150
+🍚|Riz complet cuit|riz brun|Féculents|123|2.7|25.6|1|1.8|portion=150
+🍚|Riz cru|riz sec|Féculents|350|7|78|0.6|1.3|portion=60
+🍝|Pâtes cuites|pates|Féculents|158|5.8|31|0.9|1.8|portion=180
+🍝|Pâtes complètes cuites|pates completes|Féculents|150|6|29|1.2|3.9|portion=180
+🍝|Pâtes crues|pates seches,spaghetti|Féculents|358|12.5|72|1.5|3|portion=80
+🌾|Quinoa cuit|quinoa|Féculents|120|4.4|21.3|1.9|2.8|portion=150
+🌾|Semoule cuite|semoule,couscous|Féculents|112|3.8|23|0.2|1.4|portion=150
+🥖|Baguette|pain blanc,pain|Féculents|270|9|55|1.5|2.7|morceau=50
+🍞|Pain complet|pain gris|Féculents|247|13|41|3.4|7|tranche=35
+🍞|Pain de mie|pain de mie blanc|Féculents|265|8.5|49|3.5|3.2|tranche=25
+🥣|Flocons d'avoine|avoine,porridge|Féculents|372|13|60|7|10|portion=40
+🥐|Croissant|croissants|Féculents|406|8|45|21|2.5|unité=60
+🥣|Muesli|céréales,cereales|Féculents|370|10|65|6|8|portion=40
+🥛|Lait demi-écrémé|lait|Laitages|46|3.4|4.8|1.6|0|ml;verre=250
+🥛|Lait entier|lait entier|Laitages|64|3.3|4.7|3.6|0|ml;verre=250
+🥛|Lait écrémé|lait ecreme|Laitages|35|3.4|4.9|0.1|0|ml;verre=250
+🥛|Lait d'amande|boisson amande|Boissons|24|0.5|3|1.1|0|ml;verre=250
+🥣|Yaourt nature|yaourt,yogourt,yoghourt|Laitages|55|4|6|1.5|0|pot=125
+🥣|Yaourt grec|yaourt a la grecque|Laitages|97|9|4|5|0|pot=150
+🥣|Fromage blanc 0%|fromage blanc|Laitages|46|8|4|0.2|0|portion=100
+🥣|Skyr nature|skyr|Laitages|63|11|4|0.2|0|pot=140
+🧀|Emmental|fromage,gruyère,fromage râpé|Laitages|380|28|1|29|0|portion=30
+🧀|Mozzarella|mozza|Laitages|250|18|2|19|0|boule=125
+🧀|Camembert|brie|Laitages|300|20|0.5|24|0|portion=30
+🧀|Parmesan|grana padano|Laitages|392|36|0|26|0|càs=8
+🧀|Fromage de chèvre|chevre|Laitages|270|18|1|22|0|portion=30
+🧈|Beurre|beurre doux|Autres|717|0.7|0.1|81|0|càs=14;càc=5
+🥛|Crème fraîche épaisse|creme fraiche|Laitages|290|2.2|2.8|30|0|càs=15
+🥚|Oeuf entier|oeuf,oeufs,œuf,œufs|Oeufs|143|13|1|10|0|unité=55
+🥚|Blanc d'œuf|blanc d'oeuf|Oeufs|48|10.9|0.7|0.2|0|unité=33
+🥚|Jaune d'œuf|jaune d'oeuf|Oeufs|322|16|3.6|27|0|unité=18
+🍳|Omelette nature|omelette|Oeufs|154|10.6|0.6|12|0|unité=110
+🥜|Amandes|amande|Oléagineux|579|21|22|50|12|poignée=25
+🌰|Noix|noix de grenoble|Oléagineux|654|15|14|65|6.7|poignée=25
+🌰|Noisettes|noisette|Oléagineux|628|15|17|61|10|poignée=25
+🥜|Noix de cajou|cajou|Oléagineux|553|18|30|44|3.3|poignée=25
+🥜|Cacahuètes|cacahuete,arachides|Oléagineux|567|26|16|49|8.5|poignée=25
+🥜|Beurre de cacahuète|peanut butter|Oléagineux|588|25|20|50|6|càs=16;càc=5
+🌱|Graines de chia|chia|Oléagineux|486|17|42|31|34|càs=12
+🍫|Chocolat noir|chocolat|Autres|550|7|34|40|11|carré=10
+🍫|Pâte à tartiner|nutella|Autres|540|6|58|31|3|càs=18;càc=6
+🍕|Pizza|pizza margherita|Plats|250|11|33|9|2.3|part=125
+🍔|Burger|hamburger|Plats|250|13|24|11|1.5|unité=200
+🥪|Sandwich jambon-fromage|sandwich|Plats|260|11|31|10|2|unité=200
+🌮|Tacos|tacos français|Plats|220|11|22|10|1.5|unité=350
+🥙|Kebab|kebap,döner|Plats|215|11|20|10|1.5|unité=400
+🍟|Frites|frite|Plats|312|3.4|41|15|3.8|portion=150
+🍗|Nuggets de poulet|nuggets|Plats|250|15|16|14|1|unité=18
+🍝|Lasagnes|lasagne|Plats|135|7|13|6|1|portion=300
+🥧|Quiche lorraine|quiche|Plats|270|10|17|18|1|part=150
+🥞|Crêpe|crepe|Plats|220|6.5|30|8|1|unité=60
+🍲|Soupe de légumes|soupe,potage|Plats|30|1|5|0.8|1|ml;bol=300
+☕|Café|cafe,expresso|Boissons|2|0.1|0|0|0|ml;tasse=150
+🍵|Thé|the,thé vert|Boissons|1|0|0.2|0|0|ml;tasse=200
+🥤|Coca-Cola|soda,coca|Boissons|42|0|10.6|0|0|ml;canette=330
+🍊|Jus d'orange|jus|Boissons|45|0.7|10.4|0.2|0.2|ml;verre=200
+🍺|Bière|biere|Boissons|43|0.5|3.6|0|0|ml;verre=250
+🍷|Vin rouge|vin|Boissons|85|0.1|2.6|0|0|ml;verre=125
+💧|Eau|eau plate|Boissons|0|0|0|0|0|ml;verre=250
+🫒|Huile d'olive|huile|Autres|884|0|0|100|0|ml;càs=14;càc=5
+🍯|Miel|miel|Autres|304|0.3|82|0|0|càs=21;càc=7
+🍬|Sucre|sucre blanc|Autres|400|0|100|0|0|càc=5;morceau=6
+🫘|Lentilles cuites|lentille|Légumineuses|116|9|20|0.4|8|portion=150
+🫘|Pois chiches cuits|pois chiche|Légumineuses|139|7|20|2.6|7|portion=150
+🫘|Haricots rouges cuits|haricot rouge|Légumineuses|127|8.7|22.8|0.5|6.4|portion=150
+🫘|Tofu|tofu nature|Légumineuses|120|12|1.9|7|1|portion=100
+🥫|Ketchup||Autres|100|1.2|25|0.1|0.3|càs=17
+🥫|Mayonnaise|mayo|Autres|680|1|1|75|0|càs=15
+🥣|Whey protéine|whey,proteine en poudre|Compléments|380|78|8|6|0|dose=30
+🍦|Glace|creme glacee|Autres|207|3.5|24|11|0.5|boule=60
+🍪|Biscuit sec|biscuits,gateau sec|Autres|450|6|70|16|2|unité=8
+🫒|Olives|olive|Autres|115|0.8|6|10.7|3.2|portion=30
+🍌|Datte|dattes|Fruits|282|2.5|75|0.4|8|unité=8
+🥫|Thon en boîte|thon naturel,thon boite|Poissons|116|26|0|1|0|boîte=112`;
+DB.split("\n").forEach(l=>{const a=l.split("|"),u={};let ml=0;(a[9]||"").split(";").forEach(x=>{if(x=="ml")ml=1;else if(x){const[k,v]=x.split("=");u[k]=+v}});const meta={e:a[0],syn:a[2],u,ml},ex=F.find(f=>nz(f[0])==nz(a[1]));if(ex){if(!ex[7])ex[7]=meta}else F.push([a[1],a[3],+a[4],+a[5],+a[6],+a[7],+a[8],meta])});
+
 render();
 
 // ===== Scanner Open Food Facts =====
@@ -201,6 +346,58 @@ function nf(code,x,why){x=x||{};cp={code};const I=(id,l,v,t)=>`<label class="mu"
 function saveMan(code){const v=i=>$("#f"+i).value.trim(),n=i=>parseFloat(v(i).replace(",","."));const g=parseFloat($("#fq").value);
  const x={code:code||"",name:v(0),brand:v(1),k:n(2),p:n(3)||0,c:n(4)||0,f:n(5)||0,fib:n(6)||0};
  if(!x.name||isNaN(x.k)||x.k<0||x.k>900){toast("Nom et calories valides requis");return}if(!(g>0)){toast("Quantité invalide");return}cp=x;addTo(x,g,$("#fm").value)}
+
+// ===== v3 : base d'aliments, recherche, unités, photo, repas favoris =====
+let ph=null,pmode="",eix=-1,rtc=[],phIdx=-1;
+const em=f=>f[7]&&f[7].e||CATE[f[1]]||"🍽️",umap=f=>f[7]&&f[7].u||{},bs=f=>f[7]&&f[7].ml?"ml":"g";
+function qtxt(i,f){const b=bs(f);return i.q&&i.u&&i.u!=b?`${i.q} ${i.u} (${i.g} ${b})`:`${i.g} ${b}`}
+function dflt(f){const k=Object.keys(umap(f));return k.length?{q:1,u:k[0],g:umap(f)[k[0]]}:{q:100,u:bs(f),g:100}}
+function ring2(v,m){const R=44,C=2*Math.PI*R,p=Math.min(v/m,1);return`<div style="position:relative;width:110px;height:110px"><svg viewBox="0 0 110 110" width="110" height="110"><circle cx="55" cy="55" r="${R}" stroke="#ffffff40" stroke-width="10" fill="none"/><circle cx="55" cy="55" r="${R}" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 55 55)" style="transition:stroke-dasharray .8s"/></svg><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px">${r0(p*100)}%</div></div>`}
+function lev(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);for(let j=1;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]==b[j-1]?0:1));return d[m][n]}
+function tok(t,n,nw,sy,sw){if(n==t)return 100;if(sy.includes(t))return 95;if(n.startsWith(t))return 85;if(nw.some(w=>w.startsWith(t)))return 70;if(sy.some(s=>s.startsWith(t))||sw.some(w=>w.startsWith(t)))return 65;
+ if(t.length>=3&&n.includes(t))return 50;if(t.length>=3&&sy.some(s=>s.includes(t)))return 45;
+ if(t.length>=4){let b=0;for(const w of nw.concat(sw)){const d=lev(t,w);if(d<=(t.length>6?2:1))b=Math.max(b,32-d*6);else if(w.length>=t.length&&lev(t,w.slice(0,t.length))<=1)b=Math.max(b,24)}return b}return 0}
+function search(q){const ts=q.split(" ").filter(Boolean),out=[];if(!ts.length)return out;
+ for(const f of allF()){const n=nz(f[0]),nw=n.split(" "),sy=((f[7]&&f[7].syn)||"").split(",").map(nz).filter(Boolean),sw=sy.join(" ").split(" ");let sum=0,ok=1;for(const t of ts){const x=tok(t,n,nw,sy,sw);if(!x){ok=0;break}sum+=x}if(ok)out.push([sum/ts.length+(n==q?20:0),f])}
+ return out.sort((a,b)=>b[0]-a[0]||a[1][0].length-b[1][0].length).slice(0,30).map(x=>x[1])}
+function row(f,x){return`<div class="it" data-n="${esc(f[0])}" onclick="pick(this.dataset.n)"><div class="row" style="gap:10px"><span style="font-size:26px">${em(f)}</span><span>${esc(f[0])}<div class="mu">${r0(f[2])} kcal / 100 ${bs(f)}</div></span></div>${x?x(f):""}</div>`}
+function addF(m){cm=m;pmode="";searchSheet("Ajouter · "+MEALS.find(x=>x[0]==m)[1])}
+function searchSheet(t){sheet(`<h2>${t}</h2><input id="q" placeholder="🔎 Rechercher (kiwi, poulet, riz…)" oninput="fs(this.value)">${pmode=="ph"?"":`<div class="chips" style="margin:10px 0"><button class="b2" onclick="photo()">📷 Photo</button><button class="b2" onclick="scan(cm)">▥ Scanner</button><button class="b2" onclick="rtSheet()">⭐ Mes repas</button></div>`}<div id="fr"></div>${pmode=="ph"?"":`<button class="b2" style="width:100%;margin-top:10px" onclick="newFood()">Créer mon aliment</button>`}`);fs("")}
+function fs(q){q=nz(q);let h="";if(!q){const qk=pmode=="ph"?null:f=>`<button class="b2" data-n="${esc(f[0])}" onclick="event.stopPropagation();quick(this.dataset.n)">+</button>`,sec=(t,a,x)=>a.length?`<h2 style="margin:12px 0 4px">${t}</h2>`+a.map(f=>row(f,x)).join(""):"";
+ h=sec("⭐ Favoris",S.fav.map(fd).filter(Boolean),qk)+sec("🕘 Récents",S.recent.map(fd).filter(Boolean).slice(0,8))+sec("🍎 Aliments courants",COMMON.map(fd).filter(Boolean))+sec("Mes aliments",S.foods.filter(f=>!(f[7]&&f[7].code)))}
+ else h=search(q).map(f=>row(f)).join("")||`<p class="mu">Aucun résultat pour « ${esc(q)} ». Essaie un autre mot, scanne le produit ou crée ton aliment.</p>`;$("#fr").innerHTML=h}
+function quick(n){const f=fd(n),d=dflt(f);(S.meals[TODAY]=S.meals[TODAY]||[]).push({m:cm,f:n,g:d.g,q:d.q,u:d.u});S.recent=[n,...S.recent.filter(a=>a!=n)].slice(0,15);save();cl();render();toast("Ajouté")}
+function pick(n){if(pmode=="ph"){phAdd(n);return}eix=-1;pk=n;qsheet(dflt(fd(n)))}
+function qsheet(d,edit){const f=fd(pk),m=umap(f),b=bs(f),us=[b,...Object.keys(m)];
+ sheet(`<div class="row sp"><div class="row" style="gap:10px"><span style="font-size:34px">${em(f)}</span><div><h2 style="margin:0">${esc(pk)}</h2><div class="mu">Pour 100 ${b} : ${r0(f[2])} kcal · P ${f[3]} · G ${f[4]} · L ${f[5]} · Fib ${f[6]||0}</div></div></div><button class="b2" data-n="${esc(pk)}" onclick="tf(this)">${S.fav.includes(pk)?"★":"☆"}</button></div><div class="g2" style="margin-top:12px"><label class="mu">Quantité<input id="gq" type="number" inputmode="decimal" value="${d.q}" oninput="upd()"></label><label class="mu">Unité<select id="qu" onchange="upd()">${us.map(u=>`<option ${u==d.u?"selected":""}>${esc(u)}</option>`).join("")}</select></label></div><div id="mc" class="c" style="margin:10px 0"></div>${edit?"":`<label class="mu">Repas ${mealSel("pmm")}</label>`}<button class="b" style="margin-top:10px" onclick="confAdd()">${edit?"Enregistrer":"✓ Ajouter au repas"}</button>${edit?`<button class="b2" style="width:100%;margin-top:8px" onclick="delI(${eix});cl()">Supprimer</button>`:""}`);upd()}
+function qg(){const f=fd(pk),m=umap(f),u=$("#qu").value,q=parseFloat($("#gq").value)||0;return{q,u,g:Math.round(q*(u==bs(f)?1:m[u])*10)/10}}
+function upd(){const f=fd(pk),x=qg(),k=x.g/100;$("#mc").innerHTML=`<b style="font-size:22px">${r0(f[2]*k)} kcal</b> <span class="mu">(${x.g} ${bs(f)})</span><div class="mu">Protéines ${r1(f[3]*k)} g · Glucides ${r1(f[4]*k)} g · Lipides ${r1(f[5]*k)} g · Fibres ${r1((f[6]||0)*k)} g</div>`}
+function confAdd(){const x=qg();if(!(x.g>0)){toast("Quantité invalide");return}
+ if(eix>=0)Object.assign(S.meals[TODAY][eix],{g:x.g,q:x.q,u:x.u});else{(S.meals[TODAY]=S.meals[TODAY]||[]).push({m:cm,f:pk,g:x.g,q:x.q,u:x.u});S.recent=[pk,...S.recent.filter(n=>n!=pk)].slice(0,15)}
+ save();cl();render();toast(eix>=0?"Modifié":"Ajouté")}
+function editI(ix){const it=S.meals[TODAY][ix],f=it&&fd(it.f);if(!f)return;eix=ix;pk=it.f;qsheet({q:it.q||it.g,u:it.u||bs(f)},1)}
+// repas favoris
+function rtSave(m){cm=m;sheet(`<h2>⭐ Enregistrer ce repas</h2><input id="rn" placeholder="Nom (ex : Petit-déj habituel)"><button class="b" style="margin-top:10px" onclick="rtGo('${m}')">Enregistrer</button>`)}
+function rtGo(m){const n=$("#rn").value.trim();if(!n){toast("Donne un nom");return}S.routines.push({name:n,items:(S.meals[TODAY]||[]).filter(i=>i.m==m).map(i=>({f:i.f,g:i.g,q:i.q,u:i.u}))});save();cl();toast("Repas enregistré")}
+function rtSheet(){rtc=[];S.routines.forEach((r,i)=>rtc.push({t:"⭐ "+r.name,items:r.items,i}));let n=0;for(let d=1;d<=14&&n<4;d++){const its=(S.meals[dstr(d)]||[]).filter(i=>i.m==cm);if(its.length){rtc.push({t:"🕘 "+dstr(d).slice(5),items:its.map(i=>({f:i.f,g:i.g,q:i.q,u:i.u}))});n++}}
+ sheet(`<h2>Mes repas · ${MEALS.find(x=>x[0]==cm)[1]}</h2>`+(rtc.map((r,k)=>{const K=r.items.reduce((a,i)=>{const x=fd(i.f);return a+(x?x[2]*i.g/100:0)},0);return`<div class="it"><div>${esc(r.t)}<div class="mu">${r.items.length} aliments · ${r0(K)} kcal</div></div><div class="row"><button class="b sm" onclick="rtAdd(${k})">Ajouter</button>${r.i!=null?`<button class="b2" onclick="rtDel(${r.i})">✕</button>`:""}</div></div>`}).join("")||'<p class="mu">Aucun repas pour l\'instant. Utilise ⭐ Enregistrer sur un repas.</p>'))}
+function rtAdd(k){const L=S.meals[TODAY]=S.meals[TODAY]||[];rtc[k].items.filter(i=>fd(i.f)).forEach(i=>L.push({m:cm,f:i.f,g:i.g,q:i.q,u:i.u}));save();cl();render();toast("Repas ajouté")}
+function rtDel(i){S.routines.splice(i,1);save();rtSheet()}
+// photo
+function photo(){sheet(`<h2>📷 Photo d'un aliment</h2><p class="mu">La photo sert à identifier les aliments. Tu indiques toi-même les quantités.</p><label class="b" style="display:block;text-align:center">📷 Prendre une photo<input type="file" accept="image/*" capture="environment" hidden onchange="onPhoto(this.files[0])"></label><label class="b2" style="display:block;text-align:center;margin-top:8px">🖼️ Choisir dans la galerie<input type="file" accept="image/*" hidden onchange="onPhoto(this.files[0])"></label>`)}
+function resize(file){return new Promise((ok,ko)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const k=Math.min(1,1024/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL("image/jpeg",.8))};im.onerror=ko;im.src=u})}
+async function onPhoto(file){if(!file)return;ph={img:null,rows:[],st:"load",msg:""};phView();
+ try{ph.img=await resize(file)}catch(e){ph.st="err";ph.msg="Image illisible.";return phView()}
+ const c=S.cfg||{};if(!c.url){ph.st="manual";return phView()}
+ try{const ac=new AbortController(),t=setTimeout(()=>ac.abort(),30000),r=await fetch(c.url,{method:"POST",headers:{"Content-Type":"application/json",...(c.token?{"X-FitCoach-Key":c.token}:{})},body:JSON.stringify({image:ph.img.split(",")[1]}),signal:ac.signal});clearTimeout(t);if(!r.ok)throw 0;const j=await r.json();
+  ph.rows=(j.foods||[]).slice(0,8).map(d=>{const f=search(nz(d.name))[0];return{f:f?f[0]:null,lbl:d.name,conf:d.confidence||"moyenne",g:f?dflt(f).g:100}});ph.st=ph.rows.length?"ok":"empty"}catch(e){ph.st="err";ph.msg="Analyse impossible (réseau ou serveur)."}phView()}
+function phView(){const p=ph;if(!p)return;const msg={load:"Analyse en cours…",manual:"Analyse automatique non configurée : ajoute les aliments toi-même (réglage dans Profil).",empty:"Aucun aliment reconnu. Ajoute-les toi-même.",err:p.msg,ok:"Je pense avoir détecté (estimation, corrige si besoin) :"}[p.st];
+ sheet(`<h2>📷 Aliments de la photo</h2>${p.img?`<img src="${p.img}" alt="" style="width:100%;max-height:200px;object-fit:cover;border-radius:14px">`:""}<p class="mu">${msg}</p>${p.rows.map((r,i)=>{const f=r.f&&fd(r.f);return`<div class="it" style="gap:6px"><div style="flex:1">${f?em(f)+" "+esc(r.f):"❓ "+esc(r.lbl)}<div class="mu">${f?"Confiance : "+esc(r.conf):"Non trouvé : choisis un aliment"}</div></div>${f?`<input type="number" inputmode="decimal" style="width:80px" value="${r.g}" onchange="ph.rows[${i}].g=+this.value;phSum()"><span class="mu">${bs(f)}</span>`:""}<button class="b2" onclick="phSearch(${i})">${f?"↻":"Choisir"}</button><button class="b2" onclick="ph.rows.splice(${i},1);phView()">✕</button></div>`}).join("")}<button class="b2" style="width:100%;margin-top:8px" onclick="phSearch(-1)">+ Ajouter un aliment</button><div id="phs" class="c" style="margin:10px 0"></div><label class="mu">Repas ${mealSel("phm")}</label><button class="b" style="margin-top:10px" onclick="phGo()">✓ Ajouter au repas</button>`);phSum()}
+function phSum(){let k=0,p=0,c=0,l=0,fb=0;ph.rows.forEach(r=>{const f=r.f&&fd(r.f);if(f){const q=r.g/100;k+=f[2]*q;p+=f[3]*q;c+=f[4]*q;l+=f[5]*q;fb+=(f[6]||0)*q}});$("#phs").innerHTML=`<b>${r0(k)} kcal</b><div class="mu">P ${r1(p)} g · G ${r1(c)} g · L ${r1(l)} g · Fib ${r1(fb)} g</div>`}
+function phSearch(i){phIdx=i;pmode="ph";searchSheet("Choisir un aliment")}
+function phAdd(n){const r={f:n,lbl:n,conf:phIdx>=0?"corrigé":"ajouté",g:dflt(fd(n)).g};phIdx>=0?ph.rows[phIdx]=r:ph.rows.push(r);pmode="";phView()}
+function phGo(){const L=S.meals[TODAY]=S.meals[TODAY]||[];let n=0;ph.rows.forEach(r=>{if(r.f&&fd(r.f)&&r.g>0){L.push({m:cm,f:r.f,g:r.g});S.recent=[r.f,...S.recent.filter(a=>a!=r.f)].slice(0,15);n++}});if(!n){toast("Aucun aliment valide");return}save();ph=null;cl();render();toast(n+" aliment(s) ajouté(s)")}
+function saveCfg(){const u=$("#cf_u").value.trim();if(u&&!u.startsWith("https://")){toast("L'adresse doit commencer par https://");return}S.cfg={url:u,token:$("#cf_t").value.trim()};save();toast("Enregistré")}
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
 </script></body></html>
