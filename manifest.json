@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "FitCoach",
-  "short_name": "FitCoach",
-  "description": "Calories, macros, entraînements et progression.",
+  "name": "FitFuel Tracker",
+  "short_name": "FitFuel",
+  "description": "Nutrition & entraînement sportif.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",
